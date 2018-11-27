@@ -311,11 +311,11 @@ request = `{
 						{
 							"type": "Array",
 							"sub_type": "Int",
-							"path": ["random", "data"]
+							"path": [data"]
 						},
 						{
 							"type": "String",
-							"path": ["random", "completionTime"]
+							"path": [completionTime"]
 						}
 					 ]
 				}

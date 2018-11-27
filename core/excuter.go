@@ -6,6 +6,7 @@ import (
 	"github.com/ontio/ontology-oracle/log"
 	"github.com/ontio/ontology-oracle/models"
 	"github.com/ontio/ontology-oracle/runners"
+	"encoding/json"
 )
 
 func (app *OracleApplication) ExecuteRun(jobRun models.JobRun) {
@@ -13,7 +14,16 @@ func (app *OracleApplication) ExecuteRun(jobRun models.JobRun) {
 	if t.After(time.Now()) {
 		return
 	}
-	app.DoneJobs[jobRun.JobID] = new(interface{})
+	v, err := json.Marshal(jobRun)
+	if err != nil {
+		log.Errorf("json.Marshal job error : %v", err)
+		return
+	}
+	err = app.Store.Put([]byte(jobRun.JobID), v, nil)
+	if err != nil {
+		log.Errorf("put job into db error : %v", err)
+		return
+	}
 	jobRun = app.executeRun(jobRun)
 	if jobRun.Status == models.RunStatusErrored {
 		log.Errorf("Current job run execution error: %v", jobRun.Result.ErrorMessage)
